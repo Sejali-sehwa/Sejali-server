@@ -28,7 +28,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 @EnableMethodSecurity
 @EnableWebSecurity
-@EnableJpaAuditing
 public class SecurityConfig {
 
 
@@ -66,6 +65,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http)throws Exception{
         http
+                .userDetailsService(userDetailsService)
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
