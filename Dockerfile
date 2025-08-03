@@ -1,6 +1,6 @@
 FROM eclipse-temurin:21-jdk
 
-ARG JAR_FILE=build/libs/sejali-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 
 EXPOSE 8010
