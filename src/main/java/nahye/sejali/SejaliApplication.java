@@ -10,4 +10,9 @@ public class SejaliApplication {
 		SpringApplication.run(SejaliApplication.class, args);
 	}
 
+
 }
+
+
+
+
