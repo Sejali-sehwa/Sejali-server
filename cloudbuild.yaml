@@ -6,6 +6,17 @@ steps:
       '.'
     ]
 
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+      'run',
+      'deploy',
+      'sejali-server',  # Cloud Run 서비스 이름
+      '--image=gcr.io/$PROJECT_ID/sejali',
+      '--region=us-central1',
+      '--platform=managed',
+      '--allow-unauthenticated'
+    ]
+
 images:
   - 'gcr.io/$PROJECT_ID/sejali'
 
