@@ -1,25 +1,13 @@
 steps:
-  # 1단계: Gradle build 수행
-  - name: 'gradle:8.4-jdk21'
-    entrypoint: bash
-    args:
-      - '-c'
-      - |
-        chmod +x gradlew
-        ./gradlew build -x test --no-daemon
-
-  # 2단계: Docker 이미지 빌드
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build',
-      '-t', 'gcr.io/$PROJECT_ID/myapp',
+      '-t', 'gcr.io/$PROJECT_ID/sejali',
       '.'
     ]
 
-# 결과 이미지 등록
 images:
-  - 'gcr.io/$PROJECT_ID/myapp'
+  - 'gcr.io/$PROJECT_ID/sejali'
 
-# Cloud Logging만 사용해서 logsBucket 오류 방지
 options:
   logging: CLOUD_LOGGING_ONLY
