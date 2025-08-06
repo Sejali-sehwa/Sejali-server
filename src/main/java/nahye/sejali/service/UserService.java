@@ -6,6 +6,7 @@ import nahye.sejali.config.JwtTokenProvider;
 import nahye.sejali.dto.user.*;
 import nahye.sejali.entity.RefreshToken;
 import nahye.sejali.entity.User;
+import nahye.sejali.enums.AuthLevel;
 import nahye.sejali.repository.RefreshTokenRepository;
 import nahye.sejali.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,7 +44,7 @@ public class UserService {
                 .username(request.getUsername())
                 .userId(request.getUserId())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .authLevel(request.getAuthLevel())
+                .authLevel(AuthLevel.USER)
                 .build();
 
         User saved = userRepository.save(user);

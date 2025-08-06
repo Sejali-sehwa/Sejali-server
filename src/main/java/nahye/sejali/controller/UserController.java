@@ -46,7 +46,7 @@ public class UserController {
             TokenResponse response = userService.login(request);
             if (response == null) {
                 logger.error("로그인 실패: UserService.signup() 결과가 null입니다. 요청: {}", request);
-                return new ResponseEntity<>("로그인 실패: 서버 내부 오류",HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>("로그인 실패: 결과 없음",HttpStatus.INTERNAL_SERVER_ERROR);
             }
             return ResponseEntity.ok(response);
         } catch (Exception e) {

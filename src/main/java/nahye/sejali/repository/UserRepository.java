@@ -14,6 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByStudentNum(int studentNum);
 
-    @Query("SELECT r.user FROM reservation r WHERE r.id = :reservationId")
-    User findByReservationId(@Param("reservationId") Long reservationId);
+//    @Query("SELECT r.user FROM reservation r WHERE r.id = :reservationId")
+//    User findByReservationId(@Param("reservationId") Long reservationId);
 }
