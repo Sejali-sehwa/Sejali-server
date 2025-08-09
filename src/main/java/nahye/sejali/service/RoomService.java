@@ -2,6 +2,7 @@ package nahye.sejali.service;
 
 import lombok.RequiredArgsConstructor;
 import nahye.sejali.dto.room.RoomGetResponse;
+import nahye.sejali.dto.room.RoomNameGetResponse;
 import nahye.sejali.dto.room.RoomRequest;
 import nahye.sejali.dto.room.RoomResponse;
 import nahye.sejali.entity.Room;
@@ -36,7 +37,7 @@ public class RoomService {
         userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
 
-        Room isExisting = roomRepository.findByRoomNameIgnoreCase(request.getRoomName());
+        Room isExisting = roomRepository.findByRoomName(request.getRoomName());
 
         if(isExisting != null){
             throw new IllegalArgumentException("이미 존재하는 실습실입니다.");
@@ -51,5 +52,16 @@ public class RoomService {
 
         Room newRoom = roomRepository.save(room);
         return new RoomResponse(newRoom);
+    }
+
+    public List<RoomNameGetResponse> getAllRoomNames(){
+        List<Room> rooms = roomRepository.findAll();
+
+        return rooms.stream()
+                .map(room -> new RoomNameGetResponse(
+                        room.getId(),
+                        room.getRoomName()
+                ))
+                .collect(Collectors.toList());
     }
 }

@@ -2,6 +2,7 @@ package nahye.sejali.controller;
 
 import lombok.RequiredArgsConstructor;
 import nahye.sejali.dto.room.RoomGetResponse;
+import nahye.sejali.dto.room.RoomNameGetResponse;
 import nahye.sejali.service.RoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,17 @@ public class RoomController {
         } catch (Exception e){
             logger.error("오류 : ",e);
             return new ResponseEntity<>("서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/name")
+    public ResponseEntity<?> getAllRoomNames(){
+        try{
+            List<RoomNameGetResponse> response = roomService.getAllRoomNames();
+            return ResponseEntity.ok(response);
+        } catch (Exception e){
+            logger.error("오류 : ",e);
+            return new ResponseEntity<>("서버 내부 오류 : ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

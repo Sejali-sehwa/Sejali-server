@@ -70,7 +70,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/user/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/reservation/**").permitAll()
+                        .requestMatchers("/reservation/**").permitAll()
+                        .requestMatchers("/room/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
