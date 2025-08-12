@@ -69,6 +69,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->auth
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/reservation/**").permitAll()
                         .requestMatchers("/room/**").permitAll()

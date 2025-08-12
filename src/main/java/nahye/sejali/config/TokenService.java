@@ -1,7 +1,7 @@
 package nahye.sejali.config;
 
 import lombok.RequiredArgsConstructor;
-import nahye.sejali.dto.user.TokenResponse;
+import nahye.sejali.dto.auth.TokenResponse;
 import nahye.sejali.entity.RefreshToken;
 import nahye.sejali.entity.User;
 import nahye.sejali.repository.RefreshTokenRepository;

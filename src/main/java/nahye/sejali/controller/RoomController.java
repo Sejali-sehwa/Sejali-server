@@ -20,7 +20,7 @@ import java.util.List;
 public class RoomController {
 
     private final RoomService roomService;
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @GetMapping
     public ResponseEntity<?> getAllRooms(){

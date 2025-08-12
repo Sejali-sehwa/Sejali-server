@@ -1,4 +1,4 @@
-package nahye.sejali.dto.user;
+package nahye.sejali.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,8 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class AdminUserResponse {
-    private int studentNum;
-    private String username;
+public class LoginRequest {
     private String userId;
+    private String password;
+
 }

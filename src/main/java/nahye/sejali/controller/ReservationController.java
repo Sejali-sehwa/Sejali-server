@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ReservationController {
     private final ReservationService reservationService;
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    @PostMapping
+    @PostMapping("/by-room")
     public ResponseEntity<?> getAllReservationsByRoomName(@RequestBody RoomNameRequest request){
         try{
             if(request == null){
@@ -28,6 +28,19 @@ public class ReservationController {
 
             ReservationsByRoomNameResponse response = reservationService.getAllReservationsByRoomName(roomName);
             return ResponseEntity.ok(response);
+        } catch (Exception e){
+            logger.error("서버 오류 발생 : ", e);
+            return ResponseEntity.status(500).body("서버 오류 발생 : " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/by-user")
+    public ResponseEntity<?> getAllReservationsByUser(Authentication authentication){
+        try{
+            String userId = authentication.getName();
+            ReservationsByUserResponse response = reservationService.getAllReservationsByUser(userId);
+
+            return ResponseEntity.status(200).body(response);
         } catch (Exception e){
             logger.error("서버 오류 발생 : ", e);
             return ResponseEntity.status(500).body("서버 오류 발생 : " + e.getMessage());

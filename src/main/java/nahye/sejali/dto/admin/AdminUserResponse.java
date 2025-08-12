@@ -1,17 +1,14 @@
-package nahye.sejali.dto.user;
+package nahye.sejali.dto.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import nahye.sejali.enums.AuthLevel;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class SignRequest {
+public class AdminUserResponse {
     private int studentNum;
     private String username;
     private String userId;
-    private String password;
-    private AuthLevel authLevel;
 }

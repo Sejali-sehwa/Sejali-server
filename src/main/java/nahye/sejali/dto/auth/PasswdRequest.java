@@ -1,14 +1,14 @@
-package nahye.sejali.dto.user;
+package nahye.sejali.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class LoginRequest {
-    private String userId;
+@NoArgsConstructor
+public class PasswdRequest {
     private String password;
-
 }

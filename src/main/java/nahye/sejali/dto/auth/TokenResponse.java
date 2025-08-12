@@ -1,4 +1,4 @@
-package nahye.sejali.dto.user;
+package nahye.sejali.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
