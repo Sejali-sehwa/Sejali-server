@@ -2,11 +2,7 @@ package nahye.sejali.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import nahye.sejali.dto.reservation.ReservationCreatedResponse;
-import nahye.sejali.dto.reservation.ReservationRequest;
-import nahye.sejali.dto.reservation.ReservationResponse;
-import nahye.sejali.dto.reservation.ReservationsByRoomNameResponse;
-import nahye.sejali.dto.room.RoomNameRequest;
+import nahye.sejali.dto.reservation.*;
 import nahye.sejali.entity.Reservation;
 import nahye.sejali.entity.Room;
 import nahye.sejali.entity.User;
@@ -14,8 +10,6 @@ import nahye.sejali.enums.AuthLevel;
 import nahye.sejali.repository.ReservationRepository;
 import nahye.sejali.repository.RoomRepository;
 import nahye.sejali.repository.UserRepository;
-import org.apache.http.HttpEntity;
-import org.hibernate.service.NullServiceException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,7 +28,6 @@ public class ReservationService {
 
     public ReservationsByRoomNameResponse getAllReservationsByRoomName(String roomName) {
         Room room = roomRepository.findByRoomName(roomName);
-        System.out.println(roomName);
         if(room == null){
             throw new IllegalArgumentException("해당 실습실을 찾을 수 없습니다.");
         }
@@ -45,7 +38,8 @@ public class ReservationService {
                     return new ReservationResponse(
                             reservation.getSeatNum(),
                             user.getStudentNum(),
-                            user.getUsername()
+                            user.getUsername(),
+                            reservation.getHeadcount()
                     );
                 })
                 .collect(Collectors.toList());
@@ -79,11 +73,14 @@ public class ReservationService {
 
         LocalDateTime endTime = calculateEndTime(request.getStartTime(), request.getDuration());
 
+        possibleReservationException(request.getSeatNum(), request.getRoomName(), null, endTime, request.getStartTime());
+
         Reservation reservation = Reservation.builder()
                 .seatNum(request.getSeatNum())
                 .startTime(request.getStartTime())
                 .endTime(endTime)
                 .duration(request.getDuration())
+                .headcount(request.getHeadCount())
                 .user(user) // User 엔티티 연결
                 .room(room) // Room 엔티티 연결
                 .build();
@@ -98,7 +95,68 @@ public class ReservationService {
                 savedReservation.getSeatNum(),
                 savedReservation.getStartTime(),
                 savedReservation.getEndTime(),
-                savedReservation.getDuration()
+                savedReservation.getDuration(),
+                savedReservation.getHeadcount()
+        );
+    }
+
+
+
+    public boolean deleteReservation(String userId, Long reservationId) {
+        Optional<Reservation> optionalReservation = reservationRepository.findById(reservationId);
+
+        if(optionalReservation.isEmpty()){
+            throw new IllegalArgumentException("해당 예약이 존재하지 않습니다.");
+        }
+
+        Reservation reservation = optionalReservation.get();
+
+        isAdminOrUserException(userId, reservation.getUser().getId());
+
+        reservationRepository.delete(reservation);
+
+        return true;
+    }
+
+
+    @Transactional
+    public ReservationCreatedResponse updateReservation(String userId, Long reservationId, ReservationUpdateRequest request) {
+        Optional<Reservation> optionalReservation = reservationRepository.findById(reservationId);
+
+        if(optionalReservation.isEmpty()){
+            throw new IllegalArgumentException("해당 예약이 존재하지 않습니다.");
+        }
+
+        Reservation reservation = optionalReservation.get();
+
+        isAdminOrUserException(userId, reservation.getUser().getId());
+
+        Room room = roomRepository.findByRoomName(request.getNewRoomName());
+        if(room == null){
+            throw new IllegalArgumentException("해당 실습실을 찾을 수 없습니다.");
+        }
+
+        LocalDateTime newEndTime = calculateEndTime(request.getNewStartTime(),request.getNewDuration());
+
+        possibleReservationException(request.getNewSeatNum(), request.getNewRoomName(), reservation.getId(), newEndTime, request.getNewStartTime());
+
+        reservation.setRoom(room);
+        reservation.setSeatNum(request.getNewSeatNum());
+        reservation.setStartTime(request.getNewStartTime());
+        reservation.setDuration(request.getNewDuration());
+        reservation.setEndTime(newEndTime);
+
+        Reservation updatedReservation = reservationRepository.save(reservation);
+        return new ReservationCreatedResponse(
+                updatedReservation.getId(),
+                updatedReservation.getRoom().getRoomName(),
+                updatedReservation.getUser().getStudentNum(),
+                updatedReservation.getUser().getUsername(),
+                updatedReservation.getSeatNum(),
+                updatedReservation.getStartTime(),
+                updatedReservation.getEndTime(),
+                updatedReservation.getDuration(),
+                updatedReservation.getHeadcount()
         );
     }
 
@@ -112,24 +170,31 @@ public class ReservationService {
 
     }
 
-    public boolean deleteReservation(String userId, Long reservationId) {
-        Optional<Reservation> optionalReservation = reservationRepository.findById(reservationId);
+    private void possibleReservationException(Integer seatNum, String roomName, Long reservationId, LocalDateTime endTime, LocalDateTime startTime){
+        List<Reservation> existingReservations = reservationRepository.findBySeatNumAndRoom_RoomName(seatNum, roomName);
 
-        if(optionalReservation.isEmpty()){
-            throw new IllegalArgumentException("해당 예약이 존재하지 않습니다.");
+        if(!existingReservations.isEmpty()){
+            for (Reservation existingReservation : existingReservations) {
+                // 현재 변경하려는 예약 자신은 제외
+                if (existingReservation.getId().equals(reservationId)){
+                    continue;
+                }
+
+                // 1. 기존 예약 시작 시간 <= 새로운 예약 시작 시간 < 기존 예약 종료 시간
+                // 2. 새로운 예약 시작 시간 <= 기존 예약 시작 시간 < 새로운 예약 종료 시간
+                if (!(endTime.isBefore(existingReservation.getStartTime()) || startTime.isAfter(existingReservation.getEndTime()))) {
+                    throw new IllegalArgumentException("해당 시간에는 예약할 수 없습니다.");
+                }
+            }
         }
+    }
 
-        Reservation reservation = optionalReservation.get();
-
+    private void isAdminOrUserException(String userId, Long reservationUserId){
         User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음 : " +userId));
 
-        if(user.getAuthLevel() != AuthLevel.ADMIN && !Objects.equals(user.getId(), reservation.getUser().getId())){
+        if(user.getAuthLevel() != AuthLevel.ADMIN && !Objects.equals(user.getId(), reservationUserId)){
             throw new IllegalArgumentException("관리자가 아니거나 예약한 사용자가 아닙니다.");
         }
-
-        reservationRepository.delete(reservation);
-
-        return true;
     }
 }

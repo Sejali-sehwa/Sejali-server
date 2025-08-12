@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -129,6 +130,24 @@ public class UserController {
         } catch (Exception e){
             logger.error("오류 : ",e);
             return new ResponseEntity<>("서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId, Authentication authentication){
+        try{
+            String currentUserId = authentication.getName();
+            boolean isDeleted = userService.deleteUser(userId, currentUserId);
+
+            if(isDeleted){
+                return ResponseEntity.status(200).body("삭제되었습니다.");
+            } else{
+                return ResponseEntity.status(500).body("삭제 실패.");
+            }
+
+        } catch(Exception e){
+            logger.error("서버 오류 발생 : ", e);
+            return ResponseEntity.status(500).body("서버 오류 발생 : " + e.getMessage());
         }
     }
 }

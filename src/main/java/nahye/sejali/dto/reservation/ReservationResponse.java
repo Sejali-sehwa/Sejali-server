@@ -8,7 +8,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ReservationResponse {
-    private int seatNum;
-    private int studentNum;
+    private Integer seatNum;
+    private Integer studentNum;
     private String username;
+    private Integer headCount;
 }

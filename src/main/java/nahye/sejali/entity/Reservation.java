@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -19,7 +20,7 @@ public class Reservation {
     private Long id;
 
     @Column(nullable = false, name = "seat_num")
-    private int seatNum;
+    private Integer seatNum;
 
     @Column(nullable = false, name = "start_time")
     private LocalDateTime startTime;
@@ -30,8 +31,8 @@ public class Reservation {
     @Column(nullable = false, name = "end_time")
     private LocalDateTime endTime;
 
-//    @Column(nullable = false, name = "headcount")
-//    private int headcount;
+    @Column(nullable = false, name = "headcount")
+    private Integer headcount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
@@ -40,4 +41,5 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
 }

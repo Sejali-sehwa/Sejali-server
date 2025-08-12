@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,7 +110,7 @@ public class UserService {
         User user = userRepository.findByUserId(userIdFromRT)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userIdFromRT));
 
-        if (tokenVersionFromRT == null || !user.getTokenVersion().equals(tokenVersionFromRT)) {
+        if (!user.getTokenVersion().equals(tokenVersionFromRT)) {
             // 버전 불일치: 이미 로그아웃되었거나 다른 기기에서 토큰이 갱신됨 (보안 상 재로그인 필요)
             throw new IllegalArgumentException("토큰 버전이 일치하지 않습니다. 다시 로그인해주세요.");
         }
@@ -208,5 +209,21 @@ public class UserService {
                         user.getUserId()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public boolean deleteUser(Long userId, String currentUserId) {
+        userRepository.findByUserId(currentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        Optional<User> isExisting = userRepository.findById(userId);
+
+        if(isExisting.isEmpty()){
+            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+        }
+
+        User user = isExisting.get();
+
+        userRepository.delete(user);
+        return true;
     }
 }

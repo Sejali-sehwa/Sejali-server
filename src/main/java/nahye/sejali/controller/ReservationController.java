@@ -1,21 +1,14 @@
 package nahye.sejali.controller;
 
 import lombok.RequiredArgsConstructor;
-import nahye.sejali.dto.reservation.ReservationCreatedResponse;
-import nahye.sejali.dto.reservation.ReservationRequest;
-import nahye.sejali.dto.reservation.ReservationsByRoomNameResponse;
+import nahye.sejali.dto.reservation.*;
 import nahye.sejali.dto.room.RoomNameRequest;
 import nahye.sejali.service.ReservationService;
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/reservation")
@@ -78,5 +71,23 @@ public class ReservationController {
             return ResponseEntity.status(500).body("서버 오류 발생" + e.getMessage());
         }
 
+    }
+
+
+    @PutMapping("/update/{reservationId}")
+    public ResponseEntity<?> updateReservation(Authentication authentication, @PathVariable Long reservationId, @RequestBody ReservationUpdateRequest request){
+        try{
+            String userId = authentication.getName();
+
+            if(userId == null){
+                return ResponseEntity.status(401).body("로그인해주세요.");
+            }
+
+            ReservationCreatedResponse response = reservationService.updateReservation(userId, reservationId, request);
+            return ResponseEntity.status(200).body(response);
+        } catch (Exception e){
+            logger.error("서버 내부 오류 발생 : ", e);
+            return ResponseEntity.status(500).body("서버 오류 발생" + e.getMessage());
+        }
     }
 }

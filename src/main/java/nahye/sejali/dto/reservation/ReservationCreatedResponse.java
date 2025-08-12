@@ -18,6 +18,6 @@ public class ReservationCreatedResponse {
     private int seatNum;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-//    private int headcount;
     private LocalTime duration;
+    private Integer headcount;
 }

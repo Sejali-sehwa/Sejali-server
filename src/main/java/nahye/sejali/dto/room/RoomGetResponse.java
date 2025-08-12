@@ -12,6 +12,5 @@ public class RoomGetResponse {
     private String roomName;
     private int seats;
     private int remainingSeats;
-    private String roomImg;
 
 }

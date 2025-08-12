@@ -27,9 +27,6 @@ public class Room {
     @Column(nullable = false, name="remaining_seats")
     private int remainingSeats;
 
-    @Column(nullable = false, name = "room_img")
-    private String roomImg;
-
     @Builder.Default
     @OneToMany(mappedBy = "room")
     private List<Reservation> reservations = new ArrayList<>();
