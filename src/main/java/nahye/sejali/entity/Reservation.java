@@ -34,6 +34,9 @@ public class Reservation {
     @Column(nullable = false, name = "headcount")
     private Integer headcount;
 
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Attendance attendance;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;

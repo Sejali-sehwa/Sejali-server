@@ -20,4 +20,5 @@ public class ReservationCreatedResponse {
     private LocalDateTime endTime;
     private LocalTime duration;
     private Integer headcount;
+    private String attendanceImg;
 }

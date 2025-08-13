@@ -55,6 +55,7 @@ public class ReservationService {
         );
     }
 
+    // 사용자용
     public ReservationsByUserResponse getAllReservationsByUser(String userId) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(()-> new IllegalArgumentException("유저가 없습니다."));
@@ -75,10 +76,12 @@ public class ReservationService {
                 reservation.getStartTime(),
                 reservation.getDuration(),
                 reservation.getEndTime(),
-                reservation.getHeadcount()
+                reservation.getHeadcount(),
+                reservation.getAttendance().getAttendanceImg()
         );
     }
 
+    //관리자용
     public ReservationsByUserResponse getUsersReservations(Long userId, String adminId) {
         userRepository.findByUserId(adminId)
                 .orElseThrow(()-> new IllegalArgumentException("유저 없음"));
@@ -101,7 +104,8 @@ public class ReservationService {
                 reservation.getStartTime(),
                 reservation.getDuration(),
                 reservation.getEndTime(),
-                reservation.getHeadcount()
+                reservation.getHeadcount(),
+                reservation.getAttendance().getAttendanceImg()
         );
     }
 
@@ -129,7 +133,8 @@ public class ReservationService {
                 .startTime(request.getStartTime())
                 .endTime(endTime)
                 .duration(request.getDuration())
-                .headcount(request.getHeadCount())
+                .headcount(request.getHeadcount())
+                .attendance(null)
                 .user(user) // User 엔티티 연결
                 .room(room) // Room 엔티티 연결
                 .build();
@@ -145,7 +150,8 @@ public class ReservationService {
                 savedReservation.getStartTime(),
                 savedReservation.getEndTime(),
                 savedReservation.getDuration(),
-                savedReservation.getHeadcount()
+                savedReservation.getHeadcount(),
+                savedReservation.getAttendance() != null ? savedReservation.getAttendance().getAttendanceImg() : null
         );
     }
 
@@ -205,9 +211,12 @@ public class ReservationService {
                 updatedReservation.getStartTime(),
                 updatedReservation.getEndTime(),
                 updatedReservation.getDuration(),
-                updatedReservation.getHeadcount()
+                updatedReservation.getHeadcount(),
+                updatedReservation.getAttendance() != null ? updatedReservation.getAttendance().getAttendanceImg() : null
         );
     }
+
+
 
     private LocalDateTime calculateEndTime(LocalDateTime startTime, LocalTime duration){
         try{

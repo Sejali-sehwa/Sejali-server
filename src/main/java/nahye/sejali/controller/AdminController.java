@@ -1,10 +1,12 @@
 package nahye.sejali.controller;
 
 import lombok.RequiredArgsConstructor;
+import nahye.sejali.dto.attendance.AttendanceCreatedResponse;
 import nahye.sejali.dto.reservation.ReservationsByUserResponse;
 import nahye.sejali.dto.room.RoomCreatedResponse;
 import nahye.sejali.dto.room.RoomRequest;
 import nahye.sejali.dto.admin.AdminUserResponse;
+import nahye.sejali.service.AttendanceService;
 import nahye.sejali.service.ReservationService;
 import nahye.sejali.service.RoomService;
 import nahye.sejali.service.UserService;
@@ -24,6 +26,7 @@ public class AdminController {
     private final UserService userService;
     private final RoomService roomService;
     private final ReservationService reservationService;
+    private final AttendanceService attendanceService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
@@ -91,6 +94,22 @@ public class AdminController {
         } catch (Exception e){
             logger.error("서버 오류 발생 : ", e);
             return ResponseEntity.status(500).body("서버 오류 발생 : " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/verify-attendance/{attendanceId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> verifyAttendance(@PathVariable Long attendanceId, Authentication authentication){
+        try{
+            String userId = authentication.getName();
+            if(userId == null){
+                return ResponseEntity.status(401).body("로그인 되지 않았습니다.");
+            }
+            AttendanceCreatedResponse response = attendanceService.verifyAttendance(userId, attendanceId);
+            return ResponseEntity.status(201).body(response);
+        } catch (Exception e){
+            logger.error("서버 오류 발생 : ", e);
+            return ResponseEntity.status(500).body("서버 오류 발생 : "+e.getMessage());
         }
     }
 }
