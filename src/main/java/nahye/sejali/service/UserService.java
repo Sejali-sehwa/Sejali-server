@@ -33,6 +33,7 @@ public class UserService {
                 .orElseThrow(()-> new IllegalArgumentException("유저 없음"));
 
         return new UserProfileResponse(
+                user.getAuthLevel(),
                 user.getStudentNum(),
                 user.getUsername(),
                 user.getUserId()
@@ -63,6 +64,7 @@ public class UserService {
 
         User updatedUser = userRepository.save(existingUser);
         return new UserProfileResponse(
+                updatedUser.getAuthLevel(),
                 updatedUser.getStudentNum(),
                 updatedUser.getUsername(),
                 updatedUser.getUserId()

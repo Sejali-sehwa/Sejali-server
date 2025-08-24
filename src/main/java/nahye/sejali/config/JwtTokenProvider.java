@@ -19,9 +19,14 @@ public class JwtTokenProvider {
     private final Key key; // 시크릿 키
 
     // JWT 시크릿 키를 application.properties에서 주입
+    // HMAC SHA 키를 생성
     public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
+
+    // 토큰 생성 :
+    // .signWith(key, SignatureAlgorithm.HS256)를 사용하여 JWT에 서명
+    // HS256 : HMAC SHA256 알고리즘
 
     // --- Access Token 생성 ---
     // Access Token은 짧은 만료 시간을 가지며, 'tokenVersion' 클레임을 포함합니다.
